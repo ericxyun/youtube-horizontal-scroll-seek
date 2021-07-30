@@ -120,15 +120,16 @@ function convertToTimeStamp(seconds) {
 }
 
 // This was for the MacBook. Prevent horizontal scrolling when on the video tag.
-/*
-function touchMove (event) {
-  event.preventDefault();
-  enableScroll();
+const navigator = window.navigator
+if (navigator.platform === 'MacIntel') {
+  function touchMove (event) {
+    event.preventDefault();
+    enableScroll();
+  }
+  const video = document.querySelector('video')
+  video.addEventListener('mousewheel', touchMove, false)
+
 }
-const video = document.querySelector('video')
-video.addEventListener('mousewheel', touchMove, false)
-*/
-console.log(window.navigator)
 
 
 // If shift is pressed where the video tag is, shift + scroll down to fast forward 5 sec, shift + scroll up to back up 5 sec
