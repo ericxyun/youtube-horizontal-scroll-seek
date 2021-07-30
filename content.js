@@ -128,7 +128,6 @@ if (navigator.platform === 'MacIntel') {
   }
   const video = document.querySelector('video')
   video.addEventListener('mousewheel', touchMove, false)
-
 }
 
 
