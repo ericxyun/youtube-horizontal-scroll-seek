@@ -131,71 +131,69 @@ if (navigator.platform === 'MacIntel') {
 }
 
 
+var video = document.querySelector('video');
+
+video.addEventListener('auxclick', function(event) {
+  if (event.target.playbackRate !== 1) {
+    if (event.button == 1) {
+      event.target.playbackRate = 1;
+      setCurrentPlaybackRate(event.target.playbackRate)
+    }
+  }
+})
+
 // If shift is pressed where the video tag is, shift + scroll down to fast forward 5 sec, shift + scroll up to back up 5 sec
-document.addEventListener('wheel', function(event) {
+video.addEventListener('wheel', function(event) {
   var target = event.target
   const nodeName = event.target.nodeName
 
-  // reset playback speed when middle click on video
-  target.addEventListener('auxclick', function(event) {
-    if (event.target.nodeName === 'VIDEO') {
-      if (event.button == 1) {
-        target.playbackRate = 1;
-        setCurrentPlaybackRate(target.playbackRate)
-        
-      }
+  if (event.shiftKey === true) {
+    clearPlaybackTimeout()
+    disableScroll()
+    if (event.deltaY > 0) {
+      // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
+      // target.currentTime += 0.5
+      target.playbackRate -= 0.25
+    } else if (event.deltaY < 0) {
+      // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
+      // target.currentTime -= 0.5
+      target.playbackRate += 0.25
     }
-  })
+    if (!document.querySelector("div#playbackrate")) {
+      createPlaybackRateDiv();
+    } 
+    setCurrentPlaybackRate(target.playbackRate)
+    setPlaybackTimeout()
+    enableScroll()
+  } else {
+    clearTimestampTimeout();
+    var duration = target.duration
+    // dynamic increment depending on length of video
+    // const divisor = 600
+    
+    // dynamic increment depending on deltaX mouse movement
+    // var increment = parseFloat(duration) / divisor
+    var increment = Math.abs(parseFloat(event.deltaX)) / 16
 
-  if (nodeName === 'VIDEO') {
-    if (event.shiftKey === true) {
-      clearPlaybackTimeout()
-      disableScroll()
-      if (event.deltaY > 0) {
-        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
-        // target.currentTime += 0.5
-        target.playbackRate -= 0.25
-      } else if (event.deltaY < 0) {
-        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
-        // target.currentTime -= 0.5
-        target.playbackRate += 0.25
-      }
-      if (!document.querySelector("div#playbackrate")) {
-        createPlaybackRateDiv();
-      } 
-      setCurrentPlaybackRate(target.playbackRate)
-      setPlaybackTimeout()
-      enableScroll()
-    } else {
-      clearTimestampTimeout();
-      var duration = target.duration
-      // dynamic increment depending on length of video
-      // const divisor = 600
-      
-      // dynamic increment depending on deltaX mouse movement
-      // var increment = parseFloat(duration) / divisor
-      var increment = Math.abs(parseFloat(event.deltaX)) / 16
-
-      var durationTimestamp = convertToTimeStamp(duration)
-      if (event.deltaX > 0) {
-        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
-        target.currentTime += increment
-      } else if (event.deltaX < 0) {
-        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
-        target.currentTime -= increment
-      }
-      if (event.deltaX !== 0 ) {
-        var currentTimestamp = convertToTimeStamp(target.currentTime)
-        var percentDuration = Math.round((parseInt(target.currentTime) / parseInt(duration)) * 100)
-        if (!isTimestampDiv()) {
-          createTimestampDiv(percentDuration)
-        }
-        setTimestampGradient(percentDuration);
-        setCurrentTimestamp(currentTimestamp, durationTimestamp);
-
-      }
-      setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
+    var durationTimestamp = convertToTimeStamp(duration)
+    if (event.deltaX > 0) {
+      // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
+      target.currentTime += increment
+    } else if (event.deltaX < 0) {
+      // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
+      target.currentTime -= increment
     }
+    if (event.deltaX !== 0 ) {
+      var currentTimestamp = convertToTimeStamp(target.currentTime)
+      var percentDuration = Math.round((parseInt(target.currentTime) / parseInt(duration)) * 100)
+      if (!isTimestampDiv()) {
+        createTimestampDiv(percentDuration)
+      }
+      setTimestampGradient(percentDuration);
+      setCurrentTimestamp(currentTimestamp, durationTimestamp);
+
+    }
+    setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
   }
 }, false)
 
