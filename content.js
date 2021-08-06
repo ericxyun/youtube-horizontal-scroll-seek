@@ -68,6 +68,7 @@ function createTimestampDiv() {
   var body = document.getElementsByTagName("body")[0]
   body.appendChild(div)
 }
+
 function isTimestampDiv() {
   if (document.querySelector("div#timestamp")) 
     return true;
@@ -120,18 +121,81 @@ function convertToTimeStamp(seconds) {
 }
 
 // This was for the MacBook. Prevent horizontal scrolling when on the video tag.
-const navigator = window.navigator
-if (navigator.platform === 'MacIntel') {
-  function touchMove (event) {
-    event.preventDefault();
-    enableScroll();
+// const navigator = window.navigator
+// if (navigator.platform === 'MacIntel') {
+//   function touchMove (event) {
+//     event.preventDefault();
+//     enableScroll();
+//   }
+//   const video = document.querySelector('video')
+//   video.addEventListener('mousewheel', touchMove, false)
+// }
+
+// Add an area where you can youtube seek
+// var leftControls = document.querySelector('div.ytp-left-controls')
+// function addSeekDiv() {
+// }
+
+
+// I can't have this here because going from YouTube's main page to a video from there, the page needs to reload. If not, video tag will not be avaiable.
+// var video = document.querySelector('video');
+
+// If shift is pressed where the video tag is, shift + scroll down to fast forward 5 sec, shift + scroll up to back up 5 sec
+document.addEventListener('wheel', function(event) {
+  var target = event.target
+  const nodeName = event.target.nodeName
+
+  if (nodeName === 'VIDEO') {
+    if (event.shiftKey === true) {
+      clearPlaybackTimeout()
+      disableScroll()
+      if (event.deltaY > 0) {
+        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
+        // target.currentTime += 0.5
+        target.playbackRate -= 0.25
+      } else if (event.deltaY < 0) {
+        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
+        // target.currentTime -= 0.5
+        target.playbackRate += 0.25
+      }
+      if (!document.querySelector("div#playbackrate")) {
+        createPlaybackRateDiv();
+      } 
+      setCurrentPlaybackRate(target.playbackRate)
+      setPlaybackTimeout()
+      enableScroll()
+    } else {
+      clearTimestampTimeout();
+      var duration = target.duration
+      // dynamic increment depending on length of video
+      // const divisor = 600
+      
+      // dynamic increment depending on deltaX mouse movement
+      // var increment = parseFloat(duration) / divisor
+      var increment = Math.abs(parseFloat(event.deltaX)) / 16
+      var durationTimestamp = convertToTimeStamp(duration)
+      if (event.deltaX > 0) {
+        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
+        target.currentTime += increment
+      } else if (event.deltaX < 0) {
+        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
+        target.currentTime -= increment
+      }
+      if (event.deltaX !== 0 ) {
+        var currentTimestamp = convertToTimeStamp(target.currentTime)
+        var percentDuration = Math.round((parseInt(target.currentTime) / parseInt(duration)) * 100)
+        if (!isTimestampDiv()) {
+          createTimestampDiv(percentDuration)
+        }
+        setTimestampGradient(percentDuration);
+        setCurrentTimestamp(currentTimestamp, durationTimestamp);
+
+      }
+      setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
+    }
+
   }
-  const video = document.querySelector('video')
-  video.addEventListener('mousewheel', touchMove, false)
-}
-
-
-var video = document.querySelector('video');
+}, false)
 
 video.addEventListener('auxclick', function(event) {
   if (event.target.playbackRate !== 1) {
@@ -141,62 +205,3 @@ video.addEventListener('auxclick', function(event) {
     }
   }
 })
-
-// If shift is pressed where the video tag is, shift + scroll down to fast forward 5 sec, shift + scroll up to back up 5 sec
-video.addEventListener('wheel', function(event) {
-  var target = event.target
-  const nodeName = event.target.nodeName
-
-  if (event.shiftKey === true) {
-    clearPlaybackTimeout()
-    disableScroll()
-    if (event.deltaY > 0) {
-      // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
-      // target.currentTime += 0.5
-      target.playbackRate -= 0.25
-    } else if (event.deltaY < 0) {
-      // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
-      // target.currentTime -= 0.5
-      target.playbackRate += 0.25
-    }
-    if (!document.querySelector("div#playbackrate")) {
-      createPlaybackRateDiv();
-    } 
-    setCurrentPlaybackRate(target.playbackRate)
-    setPlaybackTimeout()
-    enableScroll()
-  } else {
-    clearTimestampTimeout();
-    var duration = target.duration
-    // dynamic increment depending on length of video
-    // const divisor = 600
-    
-    // dynamic increment depending on deltaX mouse movement
-    // var increment = parseFloat(duration) / divisor
-    var increment = Math.abs(parseFloat(event.deltaX)) / 16
-
-    var durationTimestamp = convertToTimeStamp(duration)
-    if (event.deltaX > 0) {
-      // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
-      target.currentTime += increment
-    } else if (event.deltaX < 0) {
-      // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
-      target.currentTime -= increment
-    }
-    if (event.deltaX !== 0 ) {
-      var currentTimestamp = convertToTimeStamp(target.currentTime)
-      var percentDuration = Math.round((parseInt(target.currentTime) / parseInt(duration)) * 100)
-      if (!isTimestampDiv()) {
-        createTimestampDiv(percentDuration)
-      }
-      setTimestampGradient(percentDuration);
-      setCurrentTimestamp(currentTimestamp, durationTimestamp);
-
-    }
-    setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
-  }
-}, false)
-
-
-
-
