@@ -167,12 +167,19 @@ document.addEventListener('wheel', function(event) {
     } else {
       clearTimestampTimeout();
       var duration = target.duration
+      var deltaX = parseFloat(event.deltaX)
+
       // dynamic increment depending on length of video
-      // const divisor = 600
+      // what is the math behind this?
+      const divisor = parseFloat(duration) 
+      var increment = Math.abs(parseFloat(event.deltaX)) / 16
+      if (Math.abs(deltaX) > 5) {
+        var increment = Math.abs(deltaX) * divisor / 2500
+      }
       
       // dynamic increment depending on deltaX mouse movement
-      // var increment = parseFloat(duration) / divisor
-      var increment = Math.abs(parseFloat(event.deltaX)) / 16
+      // var increment = Math.abs(parseFloat(event.deltaX)) / 16
+      
       var durationTimestamp = convertToTimeStamp(duration)
       if (event.deltaX > 0) {
         // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
@@ -197,11 +204,14 @@ document.addEventListener('wheel', function(event) {
   }
 }, false)
 
-video.addEventListener('auxclick', function(event) {
-  if (event.target.playbackRate !== 1) {
-    if (event.button == 1) {
-      event.target.playbackRate = 1;
-      setCurrentPlaybackRate(event.target.playbackRate)
+document.addEventListener('auxclick', function(event) {
+  const nodeName = event.target.nodeName
+  if (nodeName === 'VIDEO') {
+    if (event.target.playbackRate !== 1) {
+      if (event.button == 1) {
+        event.target.playbackRate = 1;
+        setCurrentPlaybackRate(event.target.playbackRate)
+      }
     }
   }
 })
