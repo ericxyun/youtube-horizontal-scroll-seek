@@ -144,8 +144,13 @@ function convertToTimeStamp(seconds) {
 document.addEventListener('wheel', function(event) {
   var target = event.target
   const nodeName = event.target.nodeName
+  var video = document.querySelector('video')
 
-  if (nodeName === 'VIDEO') {
+  if (video) {
+    target = video
+  }
+
+  if (nodeName === 'VIDEO' || video) {
     if (event.shiftKey === true) {
       clearPlaybackTimeout()
       disableScroll()
@@ -174,7 +179,7 @@ document.addEventListener('wheel', function(event) {
       const divisor = parseFloat(duration) 
       var increment = Math.abs(parseFloat(event.deltaX)) / 16
       if (Math.abs(deltaX) > 5) {
-        var increment = Math.abs(deltaX) * divisor / 2500
+        var increment = Math.abs(deltaX) * divisor / 4500
       }
       
       // dynamic increment depending on deltaX mouse movement
@@ -206,11 +211,16 @@ document.addEventListener('wheel', function(event) {
 
 document.addEventListener('auxclick', function(event) {
   const nodeName = event.target.nodeName
-  if (nodeName === 'VIDEO') {
-    if (event.target.playbackRate !== 1) {
+  var video = document.querySelector('video')
+  var target = event.target
+  if (video) {
+    target = video
+  }
+  if (nodeName === 'VIDEO' || video) {
+    if (target.playbackRate !== 1) {
       if (event.button == 1) {
-        event.target.playbackRate = 1;
-        setCurrentPlaybackRate(event.target.playbackRate)
+        target.playbackRate = 1;
+        setCurrentPlaybackRate(target.playbackRate)
       }
     }
   }
