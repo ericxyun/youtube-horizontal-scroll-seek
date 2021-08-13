@@ -132,16 +132,28 @@ function convertToTimeStamp(seconds) {
 // }
 
 // Add an area where you can youtube seek
-// var leftControls = document.querySelector('div.ytp-left-controls')
-// function addSeekDiv() {
-// }
+var leftControls = document.querySelector('div.ytp-left-controls')
+function addSeekDiv() {
+}
 
 
 // I can't have this here because going from YouTube's main page to a video from there, the page needs to reload. If not, video tag will not be avaiable.
 // var video = document.querySelector('video');
 
+// place inside function for realtime update?
+var seekSpeed;
+document.addEventListener('onload', function(event) {
+  chrome.storage.sync.get(['seekSpeed'], function(result) {
+    seekSpeed = parseInt(result.seekSpeed)
+  })
+
+}, false)
+
 // If shift is pressed where the video tag is, shift + scroll down to fast forward 5 sec, shift + scroll up to back up 5 sec
 document.addEventListener('wheel', function(event) {
+  chrome.storage.sync.get(['seekSpeed'], function(result) {
+    seekSpeed = parseInt(result.seekSpeed)
+  })
   var target = event.target
   const nodeName = event.target.nodeName
   var video = document.querySelector('video')
@@ -150,7 +162,7 @@ document.addEventListener('wheel', function(event) {
     target = video
   }
 
-  if (nodeName === 'VIDEO' || video) {
+  if (nodeName === 'VIDEO') {
     if (event.shiftKey === true) {
       clearPlaybackTimeout()
       disableScroll()
@@ -179,7 +191,15 @@ document.addEventListener('wheel', function(event) {
       const divisor = parseFloat(duration) 
       var increment = Math.abs(parseFloat(event.deltaX)) / 16
       if (Math.abs(deltaX) > 5) {
-        var increment = Math.abs(deltaX) * divisor / 4500
+        if (seekSpeed) {
+          var increment = Math.abs(deltaX) * divisor / seekSpeed
+        }
+        else {
+
+          // var increment = Math.abs(deltaX) * divisor / 4500
+          // console.log('Didnt work')
+          // 
+        }
       }
       
       // dynamic increment depending on deltaX mouse movement
@@ -216,7 +236,7 @@ document.addEventListener('auxclick', function(event) {
   if (video) {
     target = video
   }
-  if (nodeName === 'VIDEO' || video) {
+  if (nodeName === 'VIDEO') {
     if (target.playbackRate !== 1) {
       if (event.button == 1) {
         target.playbackRate = 1;
