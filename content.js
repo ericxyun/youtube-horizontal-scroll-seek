@@ -161,6 +161,9 @@ document.addEventListener('wheel', function(event) {
   if (video) {
     target = video
   }
+  if (nodeName !== 'VIDEO') {
+    enableScroll()
+  }
 
   if (nodeName === 'VIDEO') {
     if (event.shiftKey === true) {
@@ -206,10 +209,14 @@ document.addEventListener('wheel', function(event) {
       // var increment = Math.abs(parseFloat(event.deltaX)) / 16
       
       var durationTimestamp = convertToTimeStamp(duration)
-      if (event.deltaX > 0) {
+      disableScroll()
+      var deltaY = Math.abs(event.deltaY)
+      var deltaYThresholdSeek = 2
+      var deltaYThreshold = 10
+      if (event.deltaX > 0 && deltaY <= deltaYThresholdSeek) {
         // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
         target.currentTime += increment
-      } else if (event.deltaX < 0) {
+      } else if (event.deltaX < 0 && deltaY <= deltaYThresholdSeek) {
         // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
         target.currentTime -= increment
       }
@@ -224,8 +231,10 @@ document.addEventListener('wheel', function(event) {
 
       }
       setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
+      if (Math.abs(event.deltaY) >= deltaYThreshold) {
+        enableScroll()
+      } 
     }
-
   }
 }, false)
 
