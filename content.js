@@ -212,7 +212,7 @@ document.addEventListener('wheel', function(event) {
       disableScroll()
       var deltaY = Math.abs(event.deltaY)
       var deltaYThresholdSeek = 2
-      var deltaYThreshold = 10
+      var deltaYThreshold = 5
       if (deltaY <= deltaYThresholdSeek) {
 
         if (event.deltaX > 0) {
