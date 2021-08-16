@@ -213,22 +213,25 @@ document.addEventListener('wheel', function(event) {
       var deltaY = Math.abs(event.deltaY)
       var deltaYThresholdSeek = 2
       var deltaYThreshold = 10
-      if (event.deltaX > 0 && deltaY <= deltaYThresholdSeek) {
-        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
-        target.currentTime += increment
-      } else if (event.deltaX < 0 && deltaY <= deltaYThresholdSeek) {
-        // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
-        target.currentTime -= increment
-      }
-      if (event.deltaX !== 0  && event.deltaY <= deltaYThreshold) {
-        var currentTimestamp = convertToTimeStamp(target.currentTime)
-        var percentDuration = Math.round((parseInt(target.currentTime) / parseInt(duration)) * 100)
-        if (!isTimestampDiv()) {
-          createTimestampDiv(percentDuration)
-        }
-        setTimestampGradient(percentDuration);
-        setCurrentTimestamp(currentTimestamp, durationTimestamp);
+      if (deltaY <= deltaYThresholdSeek) {
 
+        if (event.deltaX > 0) {
+          // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
+          target.currentTime += increment
+        } else if (event.deltaX < 0) {
+          // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
+          target.currentTime -= increment
+        }
+        if (event.deltaX !== 0) {
+          var currentTimestamp = convertToTimeStamp(target.currentTime)
+          var percentDuration = Math.round((parseInt(target.currentTime) / parseInt(duration)) * 100)
+          if (!isTimestampDiv()) {
+            createTimestampDiv(percentDuration)
+          }
+          setTimestampGradient(percentDuration);
+          setCurrentTimestamp(currentTimestamp, durationTimestamp);
+
+        }
       }
       setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
       if (Math.abs(event.deltaY) >= deltaYThreshold) {
