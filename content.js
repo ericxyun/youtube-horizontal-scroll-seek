@@ -220,7 +220,7 @@ document.addEventListener('wheel', function(event) {
         // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
         target.currentTime -= increment
       }
-      if (event.deltaX !== 0 ) {
+      if (event.deltaX !== 0  && event.deltaY <= deltaYThreshold) {
         var currentTimestamp = convertToTimeStamp(target.currentTime)
         var percentDuration = Math.round((parseInt(target.currentTime) / parseInt(duration)) * 100)
         if (!isTimestampDiv()) {
