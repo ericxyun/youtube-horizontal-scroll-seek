@@ -211,8 +211,8 @@ document.addEventListener('wheel', function(event) {
       var durationTimestamp = convertToTimeStamp(duration)
       disableScroll()
       var deltaY = Math.abs(event.deltaY)
-      var deltaYThresholdSeek = 2
-      var deltaYThreshold = 5
+      var deltaYThresholdSeek = 1
+      var deltaYThreshold = 4
       if (deltaY <= deltaYThresholdSeek) {
 
         if (event.deltaX > 0) {
