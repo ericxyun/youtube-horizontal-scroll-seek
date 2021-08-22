@@ -13,7 +13,7 @@ function preventDefaultForScrollKeys(event) {
 var supportsPassive = false;
 try {
   window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
-    get: function () { supportsPassive = true; } 
+    get: function () { supportsPassive = true; }
   }));
 } catch(e) {}
 
@@ -31,7 +31,7 @@ function disableScroll() {
 // call this to Enable
 function enableScroll() {
   window.removeEventListener('DOMMouseScroll', preventDefault, false);
-  window.removeEventListener(wheelEvent, preventDefault, wheelOpt); 
+  window.removeEventListener(wheelEvent, preventDefault, wheelOpt);
   window.removeEventListener('touchmove', preventDefault, wheelOpt);
   window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
 }
@@ -70,13 +70,13 @@ function createTimestampDiv() {
 }
 
 function isTimestampDiv() {
-  if (document.querySelector("div#timestamp")) 
+  if (document.querySelector("div#timestamp"))
     return true;
   return false
 }
 
 function isPlaybackRateDiv() {
-  if (document.querySelector("div#playbackrate")) 
+  if (document.querySelector("div#playbackrate"))
     return true;
   return false
 }
@@ -112,7 +112,7 @@ function setCurrentTimestamp (current, duration) {
 }
 
 function setTimestampGradient(percent) {
-  // two solid tone using 'linear-gradient' 
+  // two solid tone using 'linear-gradient'
   document.querySelector('div#timestamp').style.background = `linear-gradient(to right, red ${percent}%, orange 0`
 }
 function convertToTimeStamp(seconds) {
@@ -131,14 +131,18 @@ function convertToTimeStamp(seconds) {
 //   video.addEventListener('mousewheel', touchMove, false)
 // }
 
+/*
 // Add an area where you can youtube seek
 var leftControls = document.querySelector('div.ytp-left-controls')
 function addSeekDiv() {
+  var playbackSpeedButton = document.createElement('button')
+  playbackSpeedButton.classList.add('playbackSpeedButton')
+  const text = document.createTextNode('Playback Speed')
+  playbackSpeedButton.append(text);
+  leftControls.append(playbackSpeedButton)
 }
-
-
-// I can't have this here because going from YouTube's main page to a video from there, the page needs to reload. If not, video tag will not be avaiable.
-// var video = document.querySelector('video');
+addSeekDiv()
+*/
 
 // place inside function for realtime update?
 var seekSpeed;
@@ -148,6 +152,10 @@ document.addEventListener('onload', function(event) {
   })
 
 }, false)
+
+// I can't have this here because going from YouTube's main page to a video from there, the page needs to reload. If not, video tag will not be avaiable.
+// var video = document.querySelector('video');
+
 
 // If shift is pressed where the video tag is, shift + scroll down to fast forward 5 sec, shift + scroll up to back up 5 sec
 document.addEventListener('wheel', function(event) {
@@ -161,11 +169,52 @@ document.addEventListener('wheel', function(event) {
   if (video) {
     target = video
   }
-  if (nodeName !== 'VIDEO') {
-    enableScroll()
-  }
 
-  if (nodeName === 'VIDEO') {
+  /** Checks to see if video is anywhere near**/
+  // make into function
+  var isInVideoContainer = false;
+  if (video) {
+    if (nodeName !== 'VIDEO') {
+      // enableScroll()
+      // target = $(event.target)
+      target = event.target
+      var sibling = target.nextSibling // Will face issue when it is the last element of the node
+      if (sibling) {
+        var parent = target.parentElement
+        var node = parent.firstChild
+        while (node) {
+          node = node.nextSibling
+          if (node) {
+            // some areas of youtube are text
+            // TODO: Need to clean up
+            if (node.nodeName === '#text') {
+              break
+            }
+            var video = node.querySelector('video')
+            if (video) {
+              isInVideoContainer = true;
+              break
+            } else {
+              sibling = node.parentElement
+              video = sibling.querySelector('video')
+              if (video) {
+                isInVideoContainer = true;
+                break
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  /*****************************************************************/
+
+  if (nodeName === 'VIDEO' || isInVideoContainer) {
+    // changes target to video if video not under cursor
+    if (isInVideoContainer) {
+      target = video;
+    }
+
     if (event.shiftKey === true) {
       clearPlaybackTimeout()
       disableScroll()
@@ -180,7 +229,7 @@ document.addEventListener('wheel', function(event) {
       }
       if (!document.querySelector("div#playbackrate")) {
         createPlaybackRateDiv();
-      } 
+      }
       setCurrentPlaybackRate(target.playbackRate)
       setPlaybackTimeout()
       enableScroll()
@@ -191,7 +240,7 @@ document.addEventListener('wheel', function(event) {
 
       // dynamic increment depending on length of video
       // what is the math behind this?
-      const divisor = parseFloat(duration) 
+      const divisor = parseFloat(duration)
       var increment = Math.abs(parseFloat(event.deltaX)) / 16
       if (Math.abs(deltaX) > 5) {
         if (seekSpeed) {
@@ -201,26 +250,31 @@ document.addEventListener('wheel', function(event) {
 
           // var increment = Math.abs(deltaX) * divisor / 4500
           // console.log('Didnt work')
-          // 
+          //
         }
       }
-      
+
       // dynamic increment depending on deltaX mouse movement
       // var increment = Math.abs(parseFloat(event.deltaX)) / 16
-      
+
       var durationTimestamp = convertToTimeStamp(duration)
       disableScroll()
       var deltaY = Math.abs(event.deltaY)
       var deltaYThresholdSeek = 1
       var deltaYThreshold = 4
+      var currentTimeDelay = 0
       if (deltaY <= deltaYThresholdSeek) {
 
         if (event.deltaX > 0) {
-          // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
-          target.currentTime += increment
+          // target.currentTime += increment
+          setTimeout(function() {
+            target.currentTime += increment
+          }, currentTimeDelay)
         } else if (event.deltaX < 0) {
-          // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 37})); // Left arrow
-          target.currentTime -= increment
+          // target.currentTime -= increment
+          setTimeout(function() {
+            target.currentTime -= increment
+          }, currentTimeDelay)
         }
         if (event.deltaX !== 0) {
           var currentTimestamp = convertToTimeStamp(target.currentTime)
@@ -236,7 +290,7 @@ document.addEventListener('wheel', function(event) {
       setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
       if (Math.abs(event.deltaY) >= deltaYThreshold) {
         enableScroll()
-      } 
+      }
     }
   }
 }, false)
@@ -248,7 +302,53 @@ document.addEventListener('auxclick', function(event) {
   if (video) {
     target = video
   }
-  if (nodeName === 'VIDEO') {
+
+  // TODO: Make into function
+  /** Checks to see if video is anywhere near**/
+  var isInVideoContainer = false;
+  if (video) {
+    if (nodeName !== 'VIDEO') {
+      console.log(video)
+      // enableScroll()
+      // target = $(event.target)
+      target = event.target
+      var sibling = target.nextSibling // Will face issue when it is the last element of the node
+      if (sibling) {
+        var parent = target.parentElement
+        var node = parent.firstChild
+        while (node) {
+          node = node.nextSibling
+          if (node) {
+            // some areas of youtube are text
+            // TODO: Need to clean up
+            if (node.nodeName === '#text') {
+              break
+            }
+            var video = node.querySelector('video')
+            if (video) {
+              isInVideoContainer = true;
+              break
+            } else {
+              sibling = node.parentElement
+              video = sibling.querySelector('video')
+              if (video) {
+                isInVideoContainer = true;
+                break
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  /*****************************************************************/
+
+
+
+  if (nodeName === 'VIDEO' || isInVideoContainer) {
+    if (isInVideoContainer) {
+      target = video
+    }
     if (target.playbackRate !== 1) {
       if (event.button == 1) {
         target.playbackRate = 1;
