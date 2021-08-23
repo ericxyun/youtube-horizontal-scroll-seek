@@ -39,15 +39,15 @@ function enableScroll() {
 function createPlaybackRateDiv() {
   var div = document.createElement("div");
   div.setAttribute("id", 'playbackrate')
-  div.style.width = "100%";
+  div.style.width = "25%";
   div.style.height = "auto";
   div.style.bottom = "0px";
   div.style.position = "fixed";
   div.style.background = "red";
   div.style.color = "black";
   div.style.textAlign = "center"
-  div.style.fontSize = "14px";
-  // div.style.opacity = "0.75";
+  div.style.fontSize = "8px";
+  div.style.opacity = "0.75";
   // div.innerHTML = target.playbackRate;
   var body = document.getElementsByTagName("body")[0]
   body.appendChild(div)
@@ -56,14 +56,15 @@ function createPlaybackRateDiv() {
 function createTimestampDiv() {
   var div = document.createElement("div");
   div.setAttribute("id", 'timestamp')
-  div.style.width = "100%";
+  div.style.width = "10%";
+  div.style.marginLeft = "40%";
   div.style.height = "auto";
   div.style.bottom = "0px";
   div.style.position = "fixed";
   div.style.color = "black";
   div.style.textAlign = "center"
-  div.style.fontSize = "14px";
-  // div.style.opacity = "0.75";
+  div.style.fontSize = "8px";
+  div.style.opacity = "0.75";
   // div.innerHTML = target.playbackRate;
   var body = document.getElementsByTagName("body")[0]
   body.appendChild(div)
@@ -258,7 +259,7 @@ document.addEventListener('wheel', function(event) {
       // var increment = Math.abs(parseFloat(event.deltaX)) / 16
 
       var durationTimestamp = convertToTimeStamp(duration)
-      disableScroll()
+      // disableScroll()
       var deltaY = Math.abs(event.deltaY)
       var deltaYThresholdSeek = 1
       var deltaYThreshold = 4
@@ -289,7 +290,7 @@ document.addEventListener('wheel', function(event) {
       }
       setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
       if (Math.abs(event.deltaY) >= deltaYThreshold) {
-        enableScroll()
+        // enableScroll()
       }
     }
   }
