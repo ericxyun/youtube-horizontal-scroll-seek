@@ -289,7 +289,10 @@ document.addEventListener('wheel', function(event) {
           var currentTimestamp = convertToTimeStamp(target.currentTime)
           var percentDuration = Math.round((parseInt(target.currentTime) / parseInt(duration)) * 100)
           if (!isTimestampDiv()) {
-            createTimestampDiv(percentDuration)
+            var autoHide = document.getElementsByClassName('ytp-autohide')[0];
+            if (autoHide) {
+              createTimestampDiv(percentDuration)
+            }
           }
           setTimestampGradient(percentDuration);
           setCurrentTimestamp(currentTimestamp, durationTimestamp);
@@ -368,3 +371,8 @@ document.addEventListener('auxclick', function(event) {
     }
   }
 })
+
+// document.addEventListener('mousemove', function(event) {
+//   var autoHide = document.getElementsByClassName('ytp-autohide')[0];
+//   console.log(autoHide)
+// }, false)
