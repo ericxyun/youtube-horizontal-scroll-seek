@@ -39,15 +39,15 @@ function enableScroll() {
 function createPlaybackRateDiv() {
   var div = document.createElement("div");
   div.setAttribute("id", 'playbackrate')
-  div.style.width = "25%";
+  div.style.width = "100%";
   div.style.height = "auto";
   div.style.bottom = "0px";
   div.style.position = "fixed";
   div.style.background = "red";
   div.style.color = "black";
   div.style.textAlign = "center"
-  div.style.fontSize = "8px";
-  div.style.opacity = "0.75";
+  div.style.fontSize = "12px";
+  // div.style.opacity = "0.75";
   // div.innerHTML = target.playbackRate;
   var body = document.getElementsByTagName("body")[0]
   body.appendChild(div)
@@ -56,15 +56,15 @@ function createPlaybackRateDiv() {
 function createTimestampDiv() {
   var div = document.createElement("div");
   div.setAttribute("id", 'timestamp')
-  div.style.width = "10%";
-  div.style.marginLeft = "40%";
-  div.style.height = "auto";
+  div.style.width = "100%";
+  // div.style.height = "auto";
+  div.style.height = "5px";
   div.style.bottom = "0px";
   div.style.position = "fixed";
   div.style.color = "black";
   div.style.textAlign = "center"
-  div.style.fontSize = "8px";
-  div.style.opacity = "0.75";
+  div.style.fontSize = "12px";
+  // div.style.opacity = "0.75";
   // div.innerHTML = target.playbackRate;
   var body = document.getElementsByTagName("body")[0]
   body.appendChild(div)
@@ -109,13 +109,14 @@ function setCurrentPlaybackRate (rate) {
 }
 
 function setCurrentTimestamp (current, duration) {
-  document.querySelector('div#timestamp').innerHTML = current + " / " + duration
+  // document.querySelector('div#timestamp').innerHTML = current + " / " + duration
 }
 
 function setTimestampGradient(percent) {
   // two solid tone using 'linear-gradient'
   document.querySelector('div#timestamp').style.background = `linear-gradient(to right, red ${percent}%, orange 0`
 }
+
 function convertToTimeStamp(seconds) {
   return new Date(seconds * 1000).toISOString().substr(11, 8)
 
@@ -158,6 +159,10 @@ document.addEventListener('onload', function(event) {
 // var video = document.querySelector('video');
 
 
+document.addEventListener('load', function() {
+  var defaultProgressBar = document.getElementsByClassName('ytp-progress-bar')[0].hidden = true;
+}, false)
+
 // If shift is pressed where the video tag is, shift + scroll down to fast forward 5 sec, shift + scroll up to back up 5 sec
 document.addEventListener('wheel', function(event) {
   chrome.storage.sync.get(['seekSpeed'], function(result) {
@@ -173,6 +178,7 @@ document.addEventListener('wheel', function(event) {
 
   /** Checks to see if video is anywhere near**/
   // make into function
+  /*
   var isInVideoContainer = false;
   if (video) {
     if (nodeName !== 'VIDEO') {
@@ -208,7 +214,9 @@ document.addEventListener('wheel', function(event) {
       }
     }
   }
+  */
   /*****************************************************************/
+  var isInVideoContainer = false;
 
   if (nodeName === 'VIDEO' || isInVideoContainer) {
     // changes target to video if video not under cursor
@@ -306,6 +314,7 @@ document.addEventListener('auxclick', function(event) {
 
   // TODO: Make into function
   /** Checks to see if video is anywhere near**/
+  /*
   var isInVideoContainer = false;
   if (video) {
     if (nodeName !== 'VIDEO') {
@@ -342,10 +351,11 @@ document.addEventListener('auxclick', function(event) {
       }
     }
   }
+  */
   /*****************************************************************/
 
 
-
+  var isInVideoContainer = false
   if (nodeName === 'VIDEO' || isInVideoContainer) {
     if (isInVideoContainer) {
       target = video
