@@ -1,3 +1,4 @@
+/** Prevent Scroll **/
 function preventDefault(event) {
   event.preventDefault();
 }
@@ -35,8 +36,14 @@ function enableScroll() {
   window.removeEventListener('touchmove', preventDefault, wheelOpt);
   window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
 }
+/** Prevent Scroll (END) **/
+
+const sleep = (msec) => {
+  return new Promise(resolve => setTimeout(resolve, msec))
+}
 
 function createPlaybackRateDiv() {
+  /*
   var div = document.createElement("div");
   div.setAttribute("id", 'playbackrate')
   div.style.width = "100%";
@@ -51,6 +58,23 @@ function createPlaybackRateDiv() {
   // div.innerHTML = target.playbackRate;
   var body = document.getElementsByTagName("body")[0]
   body.appendChild(div)
+  */
+  var leftControls = document.getElementsByClassName('ytp-left-controls')[0];
+  var div = document.createElement('div');
+  div.setAttribute("id", 'playbackrate')
+  div.style.height = "100%";
+  div.style.width = "50px";
+  // div.style.backgroundColor = 'red';
+  // div.zIndex = "0";
+  div.style.textAlign = 'center';
+  var text = document.createElement('p')
+  text.innerHTML = ''
+  div.appendChild(text)
+  leftControls.append(div)
+}
+
+function setCurrentPlaybackRate (rate) {
+  document.querySelector('div#playbackrate').innerHTML = rate + "x"
 }
 
 function createTimestampDiv() {
@@ -104,9 +128,6 @@ function clearTimestampTimeout() {
   clearTimeout(timestampTimeout)
 }
 
-function setCurrentPlaybackRate (rate) {
-  document.querySelector('div#playbackrate').innerHTML = rate + "x"
-}
 
 function setCurrentTimestamp (current, duration) {
   // document.querySelector('div#timestamp').innerHTML = current + " / " + duration
@@ -225,7 +246,7 @@ document.addEventListener('wheel', function(event) {
     }
 
     if (event.shiftKey === true) {
-      clearPlaybackTimeout()
+      // clearPlaybackTimeout()
       disableScroll()
       if (event.deltaY > 0) {
         // document.dispatchEvent(new KeyboardEvent('keydown',{keyCode: 39})); // Right arrow
@@ -239,8 +260,9 @@ document.addEventListener('wheel', function(event) {
       if (!document.querySelector("div#playbackrate")) {
         createPlaybackRateDiv();
       }
+      // setPlaybackRate()
       setCurrentPlaybackRate(target.playbackRate)
-      setPlaybackTimeout()
+      // setPlaybackTimeout()
       enableScroll()
     } else {
       clearTimestampTimeout();
@@ -288,18 +310,21 @@ document.addEventListener('wheel', function(event) {
         if (event.deltaX !== 0) {
           var currentTimestamp = convertToTimeStamp(target.currentTime)
           var percentDuration = Math.round((parseInt(target.currentTime) / parseInt(duration)) * 100)
-          if (!isTimestampDiv()) {
-            var autoHide = document.getElementsByClassName('ytp-autohide')[0];
-            if (autoHide) {
-              createTimestampDiv(percentDuration)
-            }
-          }
-          setTimestampGradient(percentDuration);
-          setCurrentTimestamp(currentTimestamp, durationTimestamp);
+          // createTimestampDiv(percentDuration)
+          
+          // if (!isTimestampDiv()) {
+          //   var autoHide = document.getElementsByClassName('ytp-autohide')[0];
+          //   if (autoHide) {
+          //     createTimestampDiv(percentDuration)
+          //   }
+          // }
+          
+          // setTimestampGradient(percentDuration);
+          // setCurrentTimestamp(currentTimestamp, durationTimestamp);
 
         }
       }
-      setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
+      // setTimestampTimeout() // Need this here so timestampDiv does persist when scrolling down after horizontal scroll
       if (Math.abs(event.deltaY) >= deltaYThreshold) {
         // enableScroll()
       }
